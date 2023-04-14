@@ -1,15 +1,18 @@
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+const express  = require('express'); 
+const passportLocal = require('passport-local').Strategy;
+const app      = express(); 
+      app.use(express.urlencoded({ extended: false }));
+      app.use(express.json());
 
 const SignInLink = (req, res, db, bcrypt) => {
 
   const { email, password } = req.body;      // Retrieve the email and password from the request body
                                              // -> req.body is used ONLY for POST requests
-
   // Set up the local strategy for Passport, which will be used for authenticating users
-  passport.use(new LocalStrategy({
-      usernameField: 'email',   // Use the email field as the username field
-      passwordField: 'password' // Use the password field as the password field
+  passport.use(new passportLocal({
+      email: 'email',   // Use the email field as the username field
+      password: 'password' // Use the password field as the password field
     },
     function(email, password, done) {  // This is the authentication function that Passport will use to verify the user's credentials
 
@@ -26,6 +29,7 @@ const SignInLink = (req, res, db, bcrypt) => {
                      .where('email', '=', email)
                      .then(user => {
                        done(null, user[0]);  // Return the first matching user as an authenticated user to Passport
+                       console.log("hey")
                      })
                      .catch(err => done(err));  // If there is an error, return the error to Passport
           } else {
