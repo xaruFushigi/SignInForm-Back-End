@@ -11,7 +11,7 @@ app.use(passport.session());                    //initializes session part of pa
 app.use(express.json());
 app.use(cookieParser('secretcode'));
 
-const SignInLink = (req, res, next, passport, express, passportLocal, app) => {
+const SignInLink = (req, res, next, passport, express, passportLocal, app) => { 
 //  console.log(res.getHeaders());                // logs the headers 
 //console.log('Signin request received:', req.body.email);
   PassportConfig(passport);
@@ -25,14 +25,25 @@ const SignInLink = (req, res, next, passport, express, passportLocal, app) => {
       res.status(400).json({ message: 'Invalid email or password' });
     } else {
       // If the user is authenticated, log them in
-      req.logIn(user, function(err) {
+      req.logIn(user, function(err) { //while logging in
         if (err) {
           // If there is an error, return the error to the client
           res.status(400).json({ message: 'Unable to sign in', error: err });
-        } else {
-          // If the user is logged in, return the user object to the client
-          res.status(200).json({message: 'success',  user: { name: user.name }});     //including re.json is crucial. otherwise front-end will not receive json format
-        };                                           //restricting to back-end to send only name of the user
+        }                                        
+        // This condition checks if the user has selected the 'remember me' checkbox
+        if(req.body.remember) {
+          // This object contains options for the cookie, including how long it should be stored for
+          const cookieOpts = { maxAge: 30 * 1000, httpOnly: true };
+
+          // If the app is in production, the cookie should be secure and encrypted
+          if (process.env.NODE_ENV === 'production') {// process.env.NODE_ENV is an environment variable that is set by the Node.js runtime, and it can have different values depending on the environment in which the Node.js application is running.
+            cookieOpts.secure = true;
+          }
+
+          // This sets the 'remember_me' cookie in the browser, with the user's id as the value
+          res.cookie('remember_me', user.id, cookieOpts);
+        }
+        return res.status(200).json({ message: 'success', user: { name: user.name } }); //restricting to back-end to send only name of the user
       });
     }
   })(req, res, next);  // Call the authenticate function with the current request and response objects as arguments

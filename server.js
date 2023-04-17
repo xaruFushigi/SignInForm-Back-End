@@ -2,6 +2,7 @@
 const express = require('express');
 const app     = express();          //represents entire web application. Used for setting middleware and handle HTTP requests
 const expressSession = require('express-session'); //middleware: to call to generate a new session ID
+const  pgSession = require('connect-pg-simple')(expressSession)
 //Database related imports
 const pg      = require('pg');      //PostgreSQL client for Node.js. allows communication between PostgreSQL and Node.js
 const knex    = require('knex');    // a SQL query builder for Node.js. allows to write SQL queries using JavaScript syntax, and provides a set of functions to build and execute queries, handle transactions.
@@ -65,9 +66,15 @@ const SignUpLink = require('./controllers/SignUp/signup');
         app.use(express.json());                        // incoming JSON payloads to be parsed and set on the request.body property.
         app.use(expressSession({
                 secret: 'secretcode',
-                resave:  true,
-                saveUninitialized: true
-        }));
+                resave:  false,
+                saveUninitialized: false,
+                store: new pgSession({
+                    pool: pool,
+                    tableName: 'session'               //necessary to create separate 'sesion' table in the database
+                }),
+                cookie: { maxAge: 30 * 1000 } //set cookie max age to 1 day
+        }
+        ));
         app.use(cookieParser('secretcode'));            //should be same 'secret' as in expressSession
 //------------------------------END OF Middleware------------------------------//
 
