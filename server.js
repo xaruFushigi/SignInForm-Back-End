@@ -24,13 +24,13 @@ const pool = new pg.Pool({
     port: 5432,
   });
   
-  pool.query('SELECT NOW()', (err, res) => {
-    if (err) {
-      console.error('Error connecting to database', err.stack);
-    } else {
-      console.log('Database connected:', res.rows[0].now);
-    }
-  });
+       pool.query('SELECT NOW()', (err, res) => {
+            if (err) {
+            console.error('Error connecting to database', err.stack);
+            } else {
+            console.log('Database connected:', res.rows[0].now);
+            }
+        });
 //Connection related imports
 const cors    = require('cors');    //middleware: OpenSSL
 //Security related imports
@@ -44,12 +44,14 @@ const dotenv   = require('dotenv');
 const cookieParser = require('cookie-parser');
 //PORT
 const PORT    = 3050;   //bash -> PORT=3050 node server.cjs
-//importing functions from controllers folder
-const RootLink   = require('./controllers/root');
-const SignInLink = require('./controllers/signin');
-const SignUpLink = require('./controllers/signup');
-///////////////////////////////////////////////////////////////
-//Middleware
+
+//---------importing Routes from controllers folder---------------------//
+const RootLink   = require('./controllers/Root/root');
+const SignInLink = require('./controllers/SignIn/signin');
+const SignUpLink = require('./controllers/SignUp/signup');
+//---------END OF importing Routes from controllers folder--------------//
+
+//------------------------------Middleware------------------------------//
         app.use(cors({
             origin: 'http://localhost:3000',            //should be same port as in React-App port
             credentials: true                           //must be true
@@ -67,49 +69,17 @@ const SignUpLink = require('./controllers/signup');
                 saveUninitialized: true
         }));
         app.use(cookieParser('secretcode'));            //should be same 'secret' as in expressSession
-//Routes
+//------------------------------END OF Middleware------------------------------//
+
+//------------------------------Routes-----------------------------------------//
         //ROOT
-        app.get('/', (req, res)=>{RootLink.RootLink(req, res, db, bcrypt)});
+        app.get('/', (req, res)=>{RootLink.RootLink(req, res, db)});
         //SIGNIN
-        app.post('/signin', (req, res)=> {SignInLink.SignInLink(req, res, db, bcrypt)});  // Define a new route for handling POST requests to '/signin'
+        app.post('/signin', (req, res, next)=> {SignInLink.SignInLink(req, res, next, passport, express, passportLocal, app, pool)});  // Define a new route for handling POST requests to '/signin'
         //SIGNUP||REGISTER
-//SIGNUP||REGISTER
-// When the server receives a POST request to the '/signup' route, it will execute the following code:
-        app.post('/signup', async (req, res) => {
-            try {
-            // Extract the name, email, and password fields from the request body sent by the client:
-            const { name, email, password } = req.body;
-        
-            // Check if a user with the given email already exists in the 'login' table of the database:
-            const existingUser = await db('login').where({ email }).first();
-            if (existingUser) {
-                // If such a user exists, send an HTTP response with status code 400 and an error message:
-                return res.status(400).json({ error: 'User already exists' });
-            }
-        
-            // If the user does not already exist, insert a new user with the given name, email, and registration date into the 'users' table of the database:
-            const newUser = await db('users').insert({
-                name,
-                email,
-                joined: new Date()
-            }).returning('*');
-        
-            // Insert the hashed password into the 'login' table of the database along with the user's email:
-            await db('login').insert({
-                email,
-                hash: password
-            });
-        
-            // Send an HTTP response with status code 201, the newly created user object, and a success message:
-            res.status(201).json({ user: newUser[0], message: 'User created successfully' });
-            } catch (error) {
-            // If there was an error during this process, log the error and send an HTTP response with status code 500 and an error message:
-            console.log(error);
-            res.status(500).json({ error: 'Internal Server Error' });
-            }
-        });    
+        // When the server receives a POST request to the '/signup' route, it will execute the following code:
+        app.post('/signup', (req, res) => { SignUpLink.SignUpLink(req, res, db, bcrypt)});    
         // Define a new route for handling POST requests to '/signin'
+//------------------------------END OF Routes--------------------------------//
 //Start of server
 app.listen(PORT, ()=>{console.log(`app is running in port ${PORT}`)});
-
-  

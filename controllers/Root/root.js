@@ -1,4 +1,4 @@
-const RootLink = (req, res, db, bcrpyt) => {
+const RootLink = (req, res, db) => {
         db.select('*')
           .from('users')
           .then(response => {
