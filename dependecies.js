@@ -48,6 +48,9 @@ const crypto   = require('crypto');
 //cookies
 const cookieParser = require('cookie-parser');
 
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
+
 
 module.exports = {
     GoogleStrategy,

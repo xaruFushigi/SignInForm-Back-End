@@ -2,7 +2,7 @@
 const { GoogleStrategy, express, expressSession, app,
         pgSession, dotenv, pg, knex, db, pool, cors,
         passport, passportLocal, localStrategy, bcrypt, jwt, 
-        crypto, cookieParser} = require('./dependecies');
+        crypto, cookieParser, csrf, csrfProtection} = require('./dependecies');
 //---------END OF importing dependecies from './dependecies'------------//
 
 //---------importing Routes from controllers folder---------------------//
@@ -36,16 +36,28 @@ const { OAuth } = require('./controllers/SignIn/OAuth');
         }
         ));
         app.use(cookieParser('secretcode', {sameSite: 'lax'}));            //should be same 'secret' as in expressSession
+
+        app.use(csrfProtection);
+        //handling errors
+        app.use((err, req, res, next) => {
+                // console.error(err.stack);
+                // res.status(500).json({ message: 'Internal Server Error' });
+                if (err.code !== 'EBADCSRFTOKEN') return next(err);
+                res.status(403).json({ message: 'Invalid CSRF Token' });
+        });
 //------------------------------END OF Middleware------------------------------//
 OAuth(passport);
 
 const isLoggedIn = (req, res, next) => {
-    req.user ? next() : res.status(400).json('user is not logged in');
+    req.user ? next() : res.redirect('/signup');
 };
 //------------------------------Routes-----------------------------------------//
         //ROOT
         app.get('/', (req, res)=>{
-            
+            const csrfToken = req.csrfToken();
+            res.cookie('XSRF-TOKEN', csrfToken);
+            res.json({ csrfToken });
+
             RootLink.RootLink(req, res, db); 
             // Set a cookie with SameSite=None
             res.setHeader('Set-Cookie', cookie.serialize('myCookie', 'myValue', {
@@ -68,17 +80,15 @@ const isLoggedIn = (req, res, next) => {
         app.get('/auth/failure/', (req, res) => {res.send('something went wrong..')})  
         
         app.get('/protected',isLoggedIn, (req, res) => {
-            try{
-                res.send("<p> Hello </p>");
-            }
-            catch (error) {
-                res.send(error).status(400);
-            }
+            const csrfToken = req.csrfToken();
+            res.cookie('XSRF-TOKEN', csrfToken);
+            res.json({ csrfToken });
+
+            res.send("Hello");
         })
         //SIGNUP||REGISTER
         // When the server receives a POST request to the '/signup' route, it will execute the following code:
         app.post('/signup', (req, res) => { SignUpLink.SignUpLink(req, res, db, bcrypt)});    
-        // Define a new route for handling POST requests to '/signin'
 //------------------------------END OF Routes--------------------------------//
 //Start of server
 app.listen(`${process.env.PORT}`, ()=>{console.log(`app is running in port ${process.env.PORT}`)});
