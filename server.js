@@ -2,7 +2,9 @@
 const { GoogleStrategy, express, expressSession, app,
         pgSession, dotenv, pg, knex, db, pool, cors,
         passport, passportLocal, localStrategy, bcrypt, jwt, 
-        crypto, cookieParser, csrf, csrfProtection} = require('./dependecies');
+        crypto, cookieParser} = require('./dependecies');
+        const csrf = require('csurf');
+        const csrfProtection = csrf({ cookie: true });
 //---------END OF importing dependecies from './dependecies'------------//
 
 //---------importing Routes from controllers folder---------------------//
@@ -13,6 +15,17 @@ const { OAuth } = require('./controllers/SignIn/OAuth');
 //---------END OF importing Routes from controllers folder--------------//
 
 //------------------------------Middleware------------------------------//
+        app.use(expressSession({
+            secret: 'secretcode',
+            resave:  false,
+            saveUninitialized: false,
+            store: new pgSession({
+                pool: pool,
+                tableName: 'session'               //necessary to create separate 'sesion' table in the database
+            }),
+            cookie: { maxAge: 30 * 1000 } //set cookie max age to 1 day
+        }
+        ));
         app.use(cors({
             origin: 'http://localhost:3000',            //should be same port as in React-App port
             credentials: true                           //must be true
@@ -23,28 +36,16 @@ const { OAuth } = require('./controllers/SignIn/OAuth');
                                                         //  -> where values can be only strings or arrays, and not any other type.
                                                         //  -> In short, this line of code enables the server to parse incoming request
                                                         //  -> data in the URL-encoded format and make it available in the req.body object.
+        
         app.use(express.json());                        // incoming JSON payloads to be parsed and set on the request.body property.
-        app.use(expressSession({
-                secret: 'secretcode',
-                resave:  false,
-                saveUninitialized: false,
-                store: new pgSession({
-                    pool: pool,
-                    tableName: 'session'               //necessary to create separate 'sesion' table in the database
-                }),
-                cookie: { maxAge: 30 * 1000 } //set cookie max age to 1 day
-        }
-        ));
-        app.use(cookieParser('secretcode', {sameSite: 'lax'}));            //should be same 'secret' as in expressSession
-
+       
         app.use(csrfProtection);
+        app.use(cookieParser('secretcode', {sameSite: 'lax'}));            //should be same 'secret' as in expressSession
         //handling errors
         app.use((err, req, res, next) => {
-                // console.error(err.stack);
-                // res.status(500).json({ message: 'Internal Server Error' });
-                if (err.code !== 'EBADCSRFTOKEN') return next(err);
-                res.status(403).json({ message: 'Invalid CSRF Token' });
-        });
+            if (err.code !== 'EBADCSRFTOKEN') return next(err);
+            res.status(403).json({ message: 'Invalid CSRF Token' });
+          });
 //------------------------------END OF Middleware------------------------------//
 OAuth(passport);
 
@@ -53,17 +54,7 @@ const isLoggedIn = (req, res, next) => {
 };
 //------------------------------Routes-----------------------------------------//
         //ROOT
-        app.get('/', (req, res)=>{
-            const csrfToken = req.csrfToken();
-            res.cookie('XSRF-TOKEN', csrfToken);
-            res.json({ csrfToken });
-
-            RootLink.RootLink(req, res, db); 
-            // Set a cookie with SameSite=None
-            res.setHeader('Set-Cookie', cookie.serialize('myCookie', 'myValue', {
-                sameSite: 'none',
-                secure: true }))
-        });
+        app.get('/', (req, res)=>{RootLink.RootLink(req, res, db);});
         //SIGNIN
         app.post('/signin', (req, res, next)=> {SignInLink.SignInLink(req, res, next, passport, express, passportLocal, app, pool, dotenv)});  // Define a new route for handling POST requests to '/signin'
         // Authenticate the user using Google OAuth2.0
@@ -81,11 +72,9 @@ const isLoggedIn = (req, res, next) => {
         
         app.get('/protected',isLoggedIn, (req, res) => {
             const csrfToken = req.csrfToken();
-            res.cookie('XSRF-TOKEN', csrfToken);
-            res.json({ csrfToken });
-
-            res.send("Hello");
-        })
+                res.cookie('XSRF-TOKEN', csrfToken);
+                res.json({ message: 'This is a protected route', csrfToken });
+        });
         //SIGNUP||REGISTER
         // When the server receives a POST request to the '/signup' route, it will execute the following code:
         app.post('/signup', (req, res) => { SignUpLink.SignUpLink(req, res, db, bcrypt)});    

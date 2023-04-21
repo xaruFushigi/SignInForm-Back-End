@@ -70,5 +70,7 @@ module.exports = {
     bcrypt,
     jwt,
     crypto,
-    cookieParser
+    cookieParser,
+    csrf,
+    csrfProtection
 }

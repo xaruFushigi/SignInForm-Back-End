@@ -1,14 +1,12 @@
 const { PassportConfig } =  require('./PassportConfig');      //configuration of passport
 
+const { GoogleStrategy, express, expressSession, app,
+        pgSession, dotenv, pg, knex, db, pool, cors,
+        passport, passportLocal, localStrategy, bcrypt, jwt, 
+        crypto, cookieParser, csrf, csrfProtection} = require('../../dependecies');
 
-const express = require('express');
-const passport = require('passport');
-const passportLocal = require('passport-local');
-const cookieParser = require('cookie-parser');
-
-const app = express();
-app.use(passport.initialize());                 //initializes passport
 app.use(passport.session());                    //initializes session part of passport
+app.use(passport.initialize());                 //initializes passport
 app.use(express.json());
 app.use(cookieParser('secretcode'));
 

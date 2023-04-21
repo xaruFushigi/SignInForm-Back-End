@@ -1,7 +1,7 @@
 const { GoogleStrategy, express, expressSession, app,
     pgSession, dotenv, pg, knex, db, pool, cors,
     passport, passportLocal, localStrategy, bcrypt, jwt, 
-    crypto, cookieParser} = require('../../dependecies');
+    crypto, cookieParser, csrf, csrfProtection} = require('../../dependecies');
 
 const serialization = () => {
     passport.serializeUser((user, done)=> {
