@@ -1,5 +1,6 @@
-const { PassportConfig }     =  require('./PassportConfig');      //configuration of passport
- 
+const { PassportConfig } =  require('./PassportConfig');      //configuration of passport
+
+
 const express = require('express');
 const passport = require('passport');
 const passportLocal = require('passport-local');
@@ -11,10 +12,12 @@ app.use(passport.session());                    //initializes session part of pa
 app.use(express.json());
 app.use(cookieParser('secretcode'));
 
-const SignInLink = (req, res, next, passport, express, passportLocal, app) => { 
+const SignInLink = (req, res, next, passport, express, passportLocal, app, dotenv) => { 
 //  console.log(res.getHeaders());                // logs the headers 
-//console.log('Signin request received:', req.body.email);
-  PassportConfig(passport);
+//  console.log('Signin request received:', req.body.email);
+  PassportConfig(passport); 
+  
+
   // Authenticate the user using Passport
   passport.authenticate('local', function(err, user, info) {
     if (err) {
