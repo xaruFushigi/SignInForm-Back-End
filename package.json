@@ -13,6 +13,7 @@
     "mongoose": "^7.0.3",
     "passport": "^0.6.0",
     "passport-auth-token": "^1.0.1",
+    "passport-google-oauth2": "^0.2.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "passport-remember-me": "^0.0.1",
