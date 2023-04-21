@@ -61,47 +61,26 @@ const OAuth = () => {
       function verify(accessToken, refreshToken, profile, cb) {
           //Called on Successful Authentication
             //insert into database
-        // db.get('SELECT * FROM federated_credentials WHERE provider = ? AND subject = ?', [
-        //   'https://accounts.google.com',
-        //   profile.id
-        // ], function(err, cred) {
-        //   if (err) { return cb(err); }
-        //   console.log(profile);
-        //   if (!cred) {
-        //     // The account at Google has not logged in to this app before.  Create a
-        //     // new user record and associate it with the Google account.
-        //     db.run('INSERT INTO users (name) VALUES (?)', [
-        //       profile.displayName
-        //     ], function(err) {
-        //       if (err) { return cb(err); }
-    
-        //       var id = this.lastID;
-        //       db.run('INSERT INTO federated_credentials (user_id, provider, subject) VALUES (?, ?, ?)', [
-        //         id,
-        //         'https://accounts.google.com',
-        //         profile.id
-        //       ], function(err) {
-        //         if (err) { return cb(err); }
-        //         var user = {
-        //           id: id,
-        //           name: profile.displayName
-        //         };
-        //         return cb(null, user);
-        //       });
-        //     });
-        //   } else {
-        //     // The account at Google has previously logged in to the app.  Get the
-        //     // user record associated with the Google account and log the user in.
-        //     db.get('SELECT * FROM users WHERE id = ?', [ cred.user_id ], function(err, row) {
-        //       if (err) { return cb(err); }
-        //       if (!row) { return cb(null, false); }
-        //       return cb(null, row);
-        //     });
-        //   }
-        // });
+            pool.query('SELECT * FROM users WHERE googleId = $1', [profile.id], (err, res) => {
+                if (err) {
+                  return done(err);
+                }
+          
+                if (res.rows.length) {
+                  return done(null, res.rows[0]);
+                } else {
+                  pool.query('INSERT INTO users (googleId, displayName, email) VALUES ($1, $2, $3) RETURNING *',
+                    [profile.id, profile.displayName, profile.emails[0].value], (err, res) => {
+                      if (err) {
+                        return done(err);
+                      }
+          
+                      return done(null, res.rows[0]);
+                    });
+                }
             return cb(err, profile);
         }
-    ));
+    )}));
     
     passport.serializeUser(function(user, done) {
         done(null, user);
