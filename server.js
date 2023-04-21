@@ -1,3 +1,4 @@
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 //back-end related imports
 const express = require('express');
 const expressSession = require('express-session'); //middleware: to call to generate a new session ID. 'In Memory' sessions handled with express, passport requires this
@@ -79,6 +80,36 @@ require('./controllers/SignIn/OAuth');
         ));
         app.use(cookieParser('secretcode'));            //should be same 'secret' as in expressSession
 //------------------------------END OF Middleware------------------------------//
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: 'http://localhost:3050/oauth2/redirect/google',
+    scope: [ 'profile', 'email' ],
+    state: true
+  },
+  function verify(accessToken, refreshToken, profile, cb) {
+      //Called on Successful Authentication
+        //insert into database
+        pool.query('SELECT * FROM users WHERE googleId = $1', [profile.id], (err, res) => {
+            if (err) {
+              return done(err);
+            }
+      
+            if (res.rows.length) {
+              return done(null, res.rows[0]);
+            } else {
+              pool.query('INSERT INTO users (googleId, displayName, email) VALUES ($1, $2, $3) RETURNING *',
+                [profile.id, profile.displayName, profile.emails[0].value], (err, res) => {
+                  if (err) {
+                    return done(err);
+                  }
+      
+                  return done(null, res.rows[0]);
+                });
+            }
+        return cb(err, profile);
+    }
+)}));
 
 //------------------------------Routes-----------------------------------------//
         //ROOT
