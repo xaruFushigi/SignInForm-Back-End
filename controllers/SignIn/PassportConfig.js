@@ -46,23 +46,25 @@ const PassportConfig = () => {
             }
         )
     )
-    serialization(passport);
+    // serialization(passport);
+    // app.use(passport.initialize());
+    // app.use(passport.session());
     //stores a cookie inside the browser. 
     // ->Take a user that we got cfrom a localStrategy and create a cookie
     // ->with User ID inside of it
-    // passport.serializeUser((user, done)=> {
-    //     done(null, user.id);
-    // });
-    // //takes that cookie and unravels it and returns a user from it 
-    // passport.deserializeUser((id, done)=> {
-    //     db.select('name').from('users').where('id', '=', id) //restrciting to retrieve only user name from database
-    //       .then(user => {
-    //         //  done(null, user[0]);
-    //         const userInformation = {name : user[0].name}
-    //               done(null, userInformation);
-    //       })
-    //       .catch(error => done(error));
-    // });
+    passport.serializeUser((user, done)=> {
+        done(null, user.id);
+    });
+    //takes that cookie and unravels it and returns a user from it 
+    passport.deserializeUser((id, done)=> {
+        db.select('name').from('users').where('id', '=', id) //restrciting to retrieve only user name from database
+          .then(user => {
+            //  done(null, user[0]);
+            const userInformation = {name : user[0].name}
+                  done(null, userInformation);
+          })
+          .catch(error => done(error));
+    });
 };
 
 module.exports = {

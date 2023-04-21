@@ -83,8 +83,8 @@ require('./controllers/SignIn/OAuth');
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3050/oauth2/redirect/google',
-    scope: [ 'profile', 'email' ],
+    callbackURL: 'http://localhost:3000/auth/google/callback', //should be same as Google's Authorized redirect URIs
+    scope: [ 'profile', 'email' ],                             //what is going to be visible of user's account
     state: true
   },
   function verify(accessToken, refreshToken, profile, cb) {
@@ -119,12 +119,15 @@ passport.use(new GoogleStrategy({
         // Authenticate the user using Google OAuth2.0
         app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email']}));
         
-        app.get('/oauth2/redirect/google',
-                passport.authenticate('google', { failureRedirect: '/signup', failureMessage: true }),
-                function(req, res) {
-                    //Successful authentication, redirect home
-                    res.redirect('/');
-                });
+        app.get('/auth/google/callback',
+                passport.authenticate('google', 
+                                            { failureRedirect: '/signup', 
+                                              failureMessage: true,
+                                              successRedirect: '/' 
+                                            }
+                                     ),
+                );
+        app.get('/auth/failure/', (req, res) => {res.send('something went wrong..')})                                    
         //SIGNUP||REGISTER
         // When the server receives a POST request to the '/signup' route, it will execute the following code:
         app.post('/signup', (req, res) => { SignUpLink.SignUpLink(req, res, db, bcrypt)});    
