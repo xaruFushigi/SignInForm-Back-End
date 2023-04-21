@@ -86,7 +86,7 @@ require('./controllers/SignIn/OAuth');
         //SIGNIN
         app.post('/signin', (req, res, next)=> {SignInLink.SignInLink(req, res, next, passport, express, passportLocal, app, pool, dotenv)});  // Define a new route for handling POST requests to '/signin'
         // Authenticate the user using Google OAuth2.0
-        app.get('/auth/google', passport.authenticate('google'));
+        app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email']}));
         
         app.get('/oauth2/redirect/google',
                 passport.authenticate('google', { failureRedirect: '/signup', failureMessage: true }),
