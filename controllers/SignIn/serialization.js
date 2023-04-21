@@ -1,23 +1,15 @@
-const bcrypt        = require('bcrypt');
-const localStrategy = require('passport-local').Strategy;
-const passport = require('passport');
-const knex    = require('knex');    // a SQL query builder for Node.js. allows to write SQL queries using JavaScript syntax, and provides a set of functions to build and execute queries, handle transactions.
-const db      = knex({              //database details
-    client: 'pg',                   //postgreSQL database
-    connection: {                   //details of database
-        host:     'localhost',      
-        port:      5432,
-        user:     'postgres',
-        password: 'myselfmyself11',
-        database: 'smart-brain'
-    }
-});
+const { GoogleStrategy, express, expressSession, app,
+    pgSession, dotenv, pg, knex, db, pool, cors,
+    passport, passportLocal, localStrategy, bcrypt, jwt, 
+    crypto, cookieParser} = require('../../dependecies');
 
 const serialization = () => {
     passport.serializeUser((user, done)=> {
         done(null, user.id);
     });
-    //takes that cookie and unravels it and returns a user from it 
+    //takes that cookie and unravels it and returns a user from it
+    // ->Take a user that we got cfrom a localStrategy and create a cookie
+    // ->with User ID inside of it 
     passport.deserializeUser((id, done)=> {
         db.select('name').from('users').where('id', '=', id) //restrciting to retrieve only user name from database
           .then(user => {

@@ -1,60 +1,17 @@
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-//back-end related imports
-const express = require('express');
-const expressSession = require('express-session'); //middleware: to call to generate a new session ID. 'In Memory' sessions handled with express, passport requires this
-const app     = express();          //represents entire web application. Used for setting middleware and handle HTTP requests
-const  pgSession = require('connect-pg-simple')(expressSession)
-//environmental configurations
-const dotenv   = require('dotenv');             //Access Env Vairiables
-dotenv.config();                                //runs .env file 
-//Database related imports
-const pg      = require('pg');      //PostgreSQL client for Node.js. allows communication between PostgreSQL and Node.js
-const knex    = require('knex');    // a SQL query builder for Node.js. allows to write SQL queries using JavaScript syntax, and provides a set of functions to build and execute queries, handle transactions.
-const db      = knex({              //database details
-    client: 'pg',                   //postgreSQL database
-    connection: {                   //details of database
-        host:     'localhost',      
-        port:      5432,
-        user:     `${process.env.DATABASE_USER}`,
-        password: `${process.env.DATABASE_PASSWORD}`,
-        database: `${process.env.DATABASE_NAME}`
-    }
-});
-//checking whether database is connected or not
-const pool = new pg.Pool({
-    user: `${process.env.DATABASE_USER}`,
-    host: 'localhost',
-    database: `${process.env.DATABASE_NAME}`,
-    password: `${process.env.DATABASE_PASSWOR}`,
-    port: 5432,
-  });
-  
-       pool.query('SELECT NOW()', (err, res) => {
-            if (err) {
-            console.error('Error connecting to database', err.stack);
-            } else {
-            console.log('Database connected:', res.rows[0].now);
-            }
-        });
-//Connection related imports
-const cors    = require('cors');    //middleware: Cross Origin Security
-//Security related imports
-const passport = require('passport'); //
-const passportLocal = require('passport-local').Strategy; //local authentication strategy for passport
-        // the google strategy for  passport
-        // twitter authentication strategy with passport
-        // github authentication with passport
-const bcrypt   = require('bcrypt');  //hashing password
-const jwt      = require('jsonwebtoken');   //jsonwebtoken for creating unique access point for each user 
-const crypto   = require('crypto');     
-//cookies
-const cookieParser = require('cookie-parser');
+//---------importing dependecies from './dependecies'------------------//
+const { GoogleStrategy, express, expressSession, app,
+        pgSession, dotenv, pg, knex, db, pool, cors,
+        passport, passportLocal, localStrategy, bcrypt, jwt, 
+        crypto, cookieParser} = require('./dependecies');
+//---------END OF importing dependecies from './dependecies'------------//
+
 //---------importing Routes from controllers folder---------------------//
 const RootLink   = require('./controllers/Root/root');
 const SignInLink = require('./controllers/SignIn/signin');
 const SignUpLink = require('./controllers/SignUp/signup');
+const { OAuth } = require('./controllers/SignIn/OAuth');
 //---------END OF importing Routes from controllers folder--------------//
-require('./controllers/SignIn/OAuth');
+
 //------------------------------Middleware------------------------------//
         app.use(cors({
             origin: 'http://localhost:3000',            //should be same port as in React-App port
@@ -78,42 +35,23 @@ require('./controllers/SignIn/OAuth');
                 cookie: { maxAge: 30 * 1000 } //set cookie max age to 1 day
         }
         ));
-        app.use(cookieParser('secretcode'));            //should be same 'secret' as in expressSession
+        app.use(cookieParser('secretcode', {sameSite: 'lax'}));            //should be same 'secret' as in expressSession
 //------------------------------END OF Middleware------------------------------//
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/auth/google/callback', //should be same as Google's Authorized redirect URIs
-    scope: [ 'profile', 'email' ],                             //what is going to be visible of user's account
-    state: true
-  },
-  function verify(accessToken, refreshToken, profile, cb) {
-      //Called on Successful Authentication
-        //insert into database
-        pool.query('SELECT * FROM users WHERE googleId = $1', [profile.id], (err, res) => {
-            if (err) {
-              return done(err);
-            }
-      
-            if (res.rows.length) {
-              return done(null, res.rows[0]);
-            } else {
-              pool.query('INSERT INTO users (googleId, displayName, email) VALUES ($1, $2, $3) RETURNING *',
-                [profile.id, profile.displayName, profile.emails[0].value], (err, res) => {
-                  if (err) {
-                    return done(err);
-                  }
-      
-                  return done(null, res.rows[0]);
-                });
-            }
-        return cb(err, profile);
-    }
-)}));
+OAuth(passport);
 
+const isLoggedIn = (req, res, next) => {
+    req.user ? next() : res.status(400).json('user is not logged in');
+};
 //------------------------------Routes-----------------------------------------//
         //ROOT
-        app.get('/', (req, res)=>{RootLink.RootLink(req, res, db)});
+        app.get('/', (req, res)=>{
+            
+            RootLink.RootLink(req, res, db); 
+            // Set a cookie with SameSite=None
+            res.setHeader('Set-Cookie', cookie.serialize('myCookie', 'myValue', {
+                sameSite: 'none',
+                secure: true }))
+        });
         //SIGNIN
         app.post('/signin', (req, res, next)=> {SignInLink.SignInLink(req, res, next, passport, express, passportLocal, app, pool, dotenv)});  // Define a new route for handling POST requests to '/signin'
         // Authenticate the user using Google OAuth2.0
@@ -123,11 +61,20 @@ passport.use(new GoogleStrategy({
                 passport.authenticate('google', 
                                             { failureRedirect: '/signup', 
                                               failureMessage: true,
-                                              successRedirect: '/' 
+                                              successRedirect: '/protected' 
                                             }
                                      ),
                 );
-        app.get('/auth/failure/', (req, res) => {res.send('something went wrong..')})                                    
+        app.get('/auth/failure/', (req, res) => {res.send('something went wrong..')})  
+        
+        app.get('/protected',isLoggedIn, (req, res) => {
+            try{
+                res.send("<p> Hello </p>");
+            }
+            catch (error) {
+                res.send(error).status(400);
+            }
+        })
         //SIGNUP||REGISTER
         // When the server receives a POST request to the '/signup' route, it will execute the following code:
         app.post('/signup', (req, res) => { SignUpLink.SignUpLink(req, res, db, bcrypt)});    

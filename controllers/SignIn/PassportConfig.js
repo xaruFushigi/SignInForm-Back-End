@@ -1,18 +1,9 @@
 const { serialization } =  require('./serialization'); 
-const bcrypt        = require('bcrypt');
-const localStrategy = require('passport-local').Strategy;
-const passport = require('passport');
-const knex    = require('knex');    // a SQL query builder for Node.js. allows to write SQL queries using JavaScript syntax, and provides a set of functions to build and execute queries, handle transactions.
-const db      = knex({              //database details
-    client: 'pg',                   //postgreSQL database
-    connection: {                   //details of database
-        host:     'localhost',      
-        port:      5432,
-        user:     'postgres',
-        password: 'myselfmyself11',
-        database: 'smart-brain'
-    }
-});
+
+const { GoogleStrategy, express, expressSession, app,
+        pgSession, dotenv, pg, knex, db, pool, cors,
+        passport, passportLocal, localStrategy, bcrypt, jwt, 
+        crypto, cookieParser} = require('../../dependecies');
 
 const PassportConfig = () => { 
     passport.use(
@@ -46,25 +37,7 @@ const PassportConfig = () => {
             }
         )
     )
-    // serialization(passport);
-    // app.use(passport.initialize());
-    // app.use(passport.session());
-    //stores a cookie inside the browser. 
-    // ->Take a user that we got cfrom a localStrategy and create a cookie
-    // ->with User ID inside of it
-    passport.serializeUser((user, done)=> {
-        done(null, user.id);
-    });
-    //takes that cookie and unravels it and returns a user from it 
-    passport.deserializeUser((id, done)=> {
-        db.select('name').from('users').where('id', '=', id) //restrciting to retrieve only user name from database
-          .then(user => {
-            //  done(null, user[0]);
-            const userInformation = {name : user[0].name}
-                  done(null, userInformation);
-          })
-          .catch(error => done(error));
-    });
+     serialization(passport);
 };
 
 module.exports = {
