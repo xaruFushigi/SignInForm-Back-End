@@ -54,7 +54,7 @@ const OAuth = () => {
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: 'oauth2/redirect/google',
+        callbackURL: 'http://localhost:3050/oauth2/redirect/google',
         scope: [ 'profile', 'email' ],
         state: true
       },
