@@ -1,18 +1,18 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 //back-end related imports
 const express = require('express');
-const expressSession = require('express-session'); //middleware: to call to generate a new session ID. 'In Memory' sessions handled with express, passport requires this
-const app     = express();          //represents entire web application. Used for setting middleware and handle HTTP requests
+const expressSession = require('express-session');              //middleware: to call to generate a new session ID. 'In Memory' sessions handled with express, passport requires this
+const app     = express();                                      //represents entire web application. Used for setting middleware and handle HTTP requests
 const  pgSession = require('connect-pg-simple')(expressSession)
 //environmental configurations
-const dotenv   = require('dotenv');             //Access Env Vairiables
-dotenv.config();                                //runs .env file 
+const dotenv   = require('dotenv');                              //Access Env Vairiables
+      dotenv.config();                                           //runs .env file 
 //Database related imports
-const pg      = require('pg');      //PostgreSQL client for Node.js. allows communication between PostgreSQL and Node.js
-const knex    = require('knex');    // a SQL query builder for Node.js. allows to write SQL queries using JavaScript syntax, and provides a set of functions to build and execute queries, handle transactions.
-const db      = knex({              //database details
-    client: 'pg',                   //postgreSQL database
-    connection: {                   //details of database
+const pg      = require('pg');                                   //PostgreSQL client for Node.js. allows communication between PostgreSQL and Node.js
+const knex    = require('knex');                                 // a SQL query builder for Node.js. allows to write SQL queries using JavaScript syntax, and provides a set of functions to build and execute queries, handle transactions.
+const db      = knex({                                           //database details
+    client: 'pg',                                                //postgreSQL database
+    connection: {                                                //details of database
         host:     'localhost',      
         port:      5432,
         user:     `${process.env.DATABASE_USER}`,
