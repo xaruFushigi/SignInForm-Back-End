@@ -2,7 +2,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 //back-end related imports
 const express = require('express');
 const expressSession = require('express-session');              //middleware: to call to generate a new session ID. 'In Memory' sessions handled with express, passport requires this
-const app     = express();                                      //represents entire web application. Used for setting middleware and handle HTTP requests
+const app     = express();                                      //represents entire web application. Used for setting middleware and handle HTTP requests and initializes express
 const  pgSession = require('connect-pg-simple')(expressSession)
 //environmental configurations
 const dotenv   = require('dotenv');                              //Access Env Vairiables
@@ -13,20 +13,20 @@ const knex    = require('knex');                                 // a SQL query 
 const db      = knex({                                           //database details
     client: 'pg',                                                //postgreSQL database
     connection: {                                                //details of database
-        host:     'localhost',      
-        port:      5432,
-        user:     `${process.env.DATABASE_USER}`,
-        password: `${process.env.DATABASE_PASSWORD}`,
-        database: `${process.env.DATABASE_NAME}`
+        host:     process.env.DATABASE_HOST,      
+        port:     process.env.DATABASE_PORT,
+        user:     process.env.DATABASE_USER,
+        password: process.env.DATABASE_PASSWORD,
+        database: process.env.DATABASE_NAME
     }
 });
 //checking whether database is connected or not
 const pool = new pg.Pool({
-    user: `${process.env.DATABASE_USER}`,
-    host: 'localhost',
-    database: `${process.env.DATABASE_NAME}`,
-    password: `${process.env.DATABASE_PASSWOR}`,
-    port: 5432,
+    user:     process.env.DATABASE_USER,
+    host:     process.env.DATABASE_HOST,
+    database: process.env.DATABASE_NAME,
+    password: process.env.DATABASE_PASSWOR,
+    port:     process.env.DATABASE_PORT,
   });
   
        pool.query('SELECT NOW()', (err, res) => {
