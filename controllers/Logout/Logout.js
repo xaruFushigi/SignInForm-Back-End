@@ -4,10 +4,11 @@ const { GoogleStrategy, express, expressSession, app,
     crypto, cookieParser, csrf, csrfProtection} = require('../../dependencies');
 
 const Logout = (req, res) => {
-    console.log('logout: ',req.session.passport.user)
-    if(req.user) {req.logout()};
-        req.session.destroy();
-        res.send('Goodbye: ', req.session.passport.user);
+    app.use(expressSession());
+    console.log('logout: ',req.expressSession.passport.user)
+    if(req.user) req.logout();
+       req.session.destroy();
+       res.send('Goodbye: ', req.expressSession.passport.user);
 };
 
 module.exports = {

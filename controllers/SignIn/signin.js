@@ -1,9 +1,11 @@
 const { PassportConfig } =  require('./PassportConfig');      //configuration of passport
+const { serialization } = require('./serialization');
 
 const { GoogleStrategy, express, expressSession, app,
         pgSession, dotenv, pg, knex, db, pool, cors,
         passport, passportLocal, localStrategy, bcrypt, jwt, 
         crypto, cookieParser, csrf, csrfProtection} = require('../../dependencies');
+
 
 const SignInLink = (req, res, next) => { 
 //  console.log(res.getHeaders());                // logs the headers 
@@ -46,6 +48,8 @@ app.use(cookieParser('secretcode'));
       });
     }
   })(req, res, next);  // Call the authenticate function with the current request and response objects as arguments
+  
+  serialization();
 };
 
 module.exports = {

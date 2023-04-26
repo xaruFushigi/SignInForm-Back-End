@@ -1,4 +1,5 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+var GitHubStrategy = require('passport-github').Strategy;
 //back-end related imports
 const express = require('express');
 const expressSession = require('express-session');              //middleware: to call to generate a new session ID. 'In Memory' sessions handled with express, passport requires this
@@ -54,6 +55,7 @@ const csrfProtection = csrf({ cookie: true });
 
 module.exports = {
     GoogleStrategy,
+    GitHubStrategy,
     express,
     expressSession,
     app,

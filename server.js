@@ -1,8 +1,6 @@
 //---------importing dependecies from './dependecies'------------------//
-const { GoogleStrategy, express, expressSession, app,
-        pgSession, dotenv, pg, knex, db, pool, cors,
-        passport, passportLocal, localStrategy, bcrypt, jwt, 
-        crypto, cookieParser, csrf, csrfProtection} = require('./dependencies');
+const { express, expressSession, app, pgSession, db, pool, cors,
+        passport, bcrypt, cookieParser} = require('./dependencies');
 //---------END OF importing dependecies from './dependecies'------------//
 
 //---------importing Routes from controllers folder---------------------//
@@ -11,8 +9,13 @@ const SignInLink = require('./controllers/SignIn/signin');
 const SignUpLink = require('./controllers/SignUp/signup');
 const Logout     = require('./controllers/Logout/Logout');
 const Protected  = require('./controllers/Protected/Protected');
-const { OAuth }  = require('./controllers/SignIn/OAuth');
 //---------END OF importing Routes from controllers folder--------------//
+
+//---------importing JS files from controllers folder-------------------//
+const { GoogleOAuth }  = require('./controllers/SignIn/GoogleOAuth');
+const { GitHubOAuth } = require('./controllers/SignIn/GitHubOAuth');
+const { serialization } = require('./controllers/SignIn/serialization');
+//---------END OF importing JS files from controllers folder------------//
 
 //------------------------------Middleware------------------------------//
         app.use(cors({
@@ -29,7 +32,7 @@ const { OAuth }  = require('./controllers/SignIn/OAuth');
             saveUninitialized: false,
             store: new pgSession({
                 pool: pool,
-                tableName: 'session'               //necessary to create separate 'sesion' table in the database
+                tableName: 'session'                     //necessary to create separate 'sesion' table in the database
             }),
             cookie: { maxAge: 30 * 1000,
                       secure: process.env.NODE_ENV === 'production'? 'true' : 'auto',     //this ensures that the cookie can only be trasnmitted over HTTPS. 'auto' makes it identify between HTTP and HTTPS
@@ -37,7 +40,7 @@ const { OAuth }  = require('./controllers/SignIn/OAuth');
                       httpOnly: true,
                       resave: false,
                       saveUninitialized: false
-            } //set cookie max age to 30 seconds
+            }                                           //set cookie max age to 30 seconds
         }
         ));      
 
@@ -45,14 +48,17 @@ const { OAuth }  = require('./controllers/SignIn/OAuth');
                                                         //  -> where values can be only strings or arrays, and not any other type.
                                                         //  -> In short, this line of code enables the server to parse incoming request
                                                         //  -> data in the URL-encoded format and make it available in the req.body object.
-        app.use(cookieParser(process.env.SESSION_SECRET, {sameSite: process.env.NODE_ENV === 'production'? 'none' : 'lax'}));            //should be same 'secret' as in expressSession
+        app.use(cookieParser(process.env.SESSION_SECRET, 
+                                {sameSite: process.env.NODE_ENV === 'production'? 'none' : 'lax'}));   //should be same 'secret' as in expressSession
 //------------------------------END OF Middleware------------------------------//
 
 const isLoggedIn = (req, res, next) => {
-    req.session.passport.user ? next() : res.status(400).json('you are not authorized for this');
+    req.expressSession.passport.user ? next() : res.status(400).json('you are not authorized for this');
 };
 
-OAuth(); //initializing Google OAuth 2.0 JavaScript file
+GoogleOAuth();                                          //initializing Google OAuth 2.0 JavaScript file
+GitHubOAuth();                                          //initializing GitHub OAuth 2.0 JavaScript file
+serialization();
 //------------------------------Routes-----------------------------------------//
         //ROOT
         app.get('/', (req, res)=>{RootLink.RootLink(req, res, db);});
@@ -61,18 +67,20 @@ OAuth(); //initializing Google OAuth 2.0 JavaScript file
         // Authenticate the user using Google OAuth2.0
             //GOOGLE OAUTH2.0
         app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email']}));
-            //GOOGLE OAUTH2.0 Success ROUTE
+            //GOOGLE OAUTH2.0 Success/failure redirect ROUTE
             app.get('/auth/google/callback',
-                passport.authenticate('google', 
-                                            { 
-                                                successRedirect: 'http://localhost:3000/',
-                                                failureRedirect: '/auth/failure',
-                                                failureMessage : true
-                                            }
-                                     ),
-                );
-            //GOOGLE OAUTH2.0 Failure ROUTE
-            app.get('/auth/failure/', (req, res) => {res.send('something went wrong..')})  
+                passport.authenticate('google', { successRedirect: 'http://localhost:3000/',
+                                                  failureRedirect: '/auth/failure',
+                                                  failureMessage : true }));
+            //GOOGLE/GITHUB OAUTH2.0 Failure ROUTE
+            app.get('/auth/failure/', (req, res) => {res.send('something went wrong..')}) 
+        //Authenticate the user using GITHUB OAuth 2.0
+            //GITHUB OAUTH2.0
+        app.get('/auth/github', passport.authenticate('github'));
+            //GITHUB OAUTH2.0 Success redirect ROUTE
+            app.get('/auth/github/callback', 
+                passport.authenticate('github', { failureRedirect: 'http://localhost:3000/signin', 
+                                                  successRedirect: 'http://localhost:3000/'})); 
         //PROTECTED
         app.get('/protected', isLoggedIn, (req, res) => { Protected.Protected(req, res, passport, app)});
         //LOGOUT

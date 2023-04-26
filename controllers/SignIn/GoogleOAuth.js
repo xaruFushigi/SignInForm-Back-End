@@ -4,7 +4,7 @@ const { PassportConfig } =  require('./PassportConfig');      //configuration of
 const { serialization } = require('./serialization');
 const { verify } = require('crypto');
 
-const OAuth = (req, res) => {
+const GoogleOAuth = (req, res) => {
 
 passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
@@ -48,6 +48,7 @@ passport.use(new GoogleStrategy({
 
       ) //end of GoogleStrategy round block  
   ); // end of OAuth round block
+  
   passport.serializeUser((user, done) => {
     // loads into req.session.passport.user
     done(null, user);
@@ -57,9 +58,10 @@ passport.use(new GoogleStrategy({
     // loads into req.user
     done(null, user);
   });
+  // serialization();
   
 };
 
 module.exports = {
-  OAuth : OAuth
+  GoogleOAuth : GoogleOAuth
 }
