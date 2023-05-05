@@ -6,8 +6,7 @@ const { GoogleStrategy, express, expressSession, app,
 const Protected = (req, res, app) => {
    
     try { 
-        console.log(req.session.passport.user)
-        res.send(req.session.passport.user); 
+        console.log(`isLoggedIn gave access for ${req.session.passport.user} to Protected Route`)
     }
     catch(error) { console.log(error) }
 };

@@ -4,19 +4,7 @@ const { GoogleStrategy, express, expressSession, app,
     crypto, cookieParser, csrf, csrfProtection} = require('../../dependencies');
 
 const RootLink = (req, res, db) => {
-        db.select('*')
-          .from('users')
-          .then(response => {
-              res.json(response);
-              res.send('<a href="/auth/google">Authenticate with Google </a>');
-            // Set a cookie with SameSite=None
-            res.setHeader('Set-Cookie', cookie.serialize('myCookie', 'myValue', {
-                sameSite: 'none',
-                secure: true }))
-          })
-          .catch(error => {
-              res.status(400).json('there has been an error: ', error);
-          });
+    
 };
 
 module.exports = {

@@ -28,12 +28,12 @@ const GitHubOAuth = () => {
             const id = await pool.query('SELECT id FROM users WHERE githubid = $1', [account.id]);
             user = {
               id: id.rows[0].id,
-              name: account.name
+              name: account.rows[0].name
             }
           } //END OF if no such user exists
           else {
             // if user exists in the database
-            user = {id : currentUserQuery.rows[0].id, name: currentUserQuery.name};
+            user = {id : currentUserQuery.rows[0].id, name: currentUserQuery.rows[0].name};
           }// end OF else block
           done(null, user);                                         
         } // END OF try block

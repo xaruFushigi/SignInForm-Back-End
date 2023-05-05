@@ -3,7 +3,6 @@ const { v4: uuidv4 } = require('uuid');
 const { PassportConfig } =  require('./PassportConfig');      //configuration of passport
 const { serialization } = require('./serialization');
 const { verify } = require('crypto');
-
 const GoogleOAuth = (req, res) => {
 
 passport.use(new GoogleStrategy({
@@ -29,15 +28,15 @@ passport.use(new GoogleStrategy({
             'INSERT INTO users (name, email, joined, googleid, displayname) VALUES ($1, $2, $3, $4, $5)',
             [account.given_name, account.email, new Date(), account.sub, account.name]
           );
-          const id = await pool.query('SELECT id FROM users WHERE googleid = $1', [account.sub]);
+          const id = await pool.query('SELECT id, name FROM users WHERE googleid = $1', [account.sub]);
           user = {
             id: id.rows[0].id,
-            name: account.name
+            name: currentUserQuery.rows[0].name
           }
         } //END OF if no such user exists
         else {
           // if user exists in the database
-          user = {id : currentUserQuery.rows[0].id, name: currentUserQuery.given_name};
+          user = {id : currentUserQuery.rows[0].id, name: currentUserQuery.rows[0].name};
         }// end OF else block
         done(null, user);                                         
       } // END OF try block
@@ -49,16 +48,16 @@ passport.use(new GoogleStrategy({
       ) //end of GoogleStrategy round block  
   ); // end of OAuth round block
   
-  passport.serializeUser((user, done) => {
-    // loads into req.session.passport.user
-    done(null, user);
-  });
+  // passport.serializeUser((user, done) => {
+  //   // loads into req.session.passport.user
+  //   done(null, user);
+  // });
   
-  passport.deserializeUser((user, done) => {
-    // loads into req.user
-    done(null, user);
-  });
-  // serialization();
+  // passport.deserializeUser((user, done) => {
+  //   // loads into req.user
+  //   done(null, user);
+  // });
+   serialization();
   
 };
 

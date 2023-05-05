@@ -26,7 +26,7 @@ const pool = new pg.Pool({
     user:     process.env.DATABASE_USER,
     host:     process.env.DATABASE_HOST,
     database: process.env.DATABASE_NAME,
-    password: process.env.DATABASE_PASSWOR,
+    password: process.env.DATABASE_PASSWORD,
     port:     process.env.DATABASE_PORT,
   });
   
@@ -37,6 +37,10 @@ const pool = new pg.Pool({
             console.log('Database connected:', res.rows[0].now);
             }
         });
+const sessionStore = new pgSession({
+        pool: pool,
+        tableName: 'session'
+});
 //Connection related imports
 const cors    = require('cors');    //middleware: Cross Origin Security
 //Security related imports
@@ -74,5 +78,6 @@ module.exports = {
     crypto,
     cookieParser,
     csrf,
-    csrfProtection
+    csrfProtection,
+    sessionStore
 }
