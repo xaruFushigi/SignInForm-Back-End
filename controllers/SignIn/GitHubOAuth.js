@@ -3,7 +3,8 @@ const { GoogleStrategy, GitHubStrategy, express, expressSession, app,
     passport, passportLocal, localStrategy, bcrypt, jwt, 
     crypto, cookieParser, csrf, csrfProtection} = require('../../dependencies');
     const { serialization } = require('./serialization');
-const GitHubOAuth = () => {
+const GitHubOAuth = (req, res, next) => {
+    
     passport.use(new GitHubStrategy({
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,

@@ -10,7 +10,7 @@ const PassportConfig = () => {
         new localStrategy({
             usernameField: 'email',
             passwordField: 'password'
-            },
+          },
             function(email, password, done) {
                 // Check the database for a user with the provided email
                 db.select('email', 'hash')
@@ -18,6 +18,7 @@ const PassportConfig = () => {
                   .where('email', '=', email)
                   .then(data => {
                     const isValid = bcrypt.compare(password, data[0].hash);  // Use bcrypt to compare the provided password with the hashed password from the database
+                    
                     if (isValid) {
                       // If the password is correct, retrieve the user from the 'users' table
                       return db.select('*')

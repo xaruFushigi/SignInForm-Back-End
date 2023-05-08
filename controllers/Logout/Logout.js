@@ -6,26 +6,18 @@ const pgSession = require('connect-pg-simple')(expressSession);
 
 const Logout = (req, res, next, passport) => {
     console.log('Logout route hit');
-    console.log("beginning of logout block");
-    
+    console.log(req.session)
+    //clearing cookies
+    res.clearCookie('session_cookie', '', {expires: new Date(0)})
+    // Destroy the session
     req.session.destroy((err) => {
-        if (err) {
-          console.log(err);
-        } else {
-          res.clearCookie('connect.sid');
-          req.logout((err)=>{if(err){return console.log(err)}});
-          
-        }
-      });
+      if (err) { console.log('Error destroying session:', err); } 
+      else { console.log('Session destroyed'); }
+  });
 
-    // res.clearCookie('connect.sid', { sameSite: true });
-    //     res.send({data: "Logout was done"})
-    
-    // req.logout(function(err) {
-    //     if (err) { return next(err); }
-    //     console.log("logout block");
-    // });
-    console.log("end of logout block",req.session)
+    //to check whether session has been destoyed
+      if(req.session) { console.log('session is still active', req.session) }
+      else{ console.log('session has been destroyed') }
 };
 
 module.exports = {

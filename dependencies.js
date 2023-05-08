@@ -52,7 +52,6 @@ const jwt      = require('jsonwebtoken');   //jsonwebtoken for creating unique a
 const crypto   = require('crypto');     
 //cookies
 const cookieParser = require('cookie-parser');
-
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 

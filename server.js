@@ -28,6 +28,7 @@ const pruneSessionInterval = BigInt(24 * 60 * 60 * 0);
             resave:  false,
             saveUninitialized: false,
             store: sessionStore,
+            name : 'session_cookie',
             cookie: { maxAge: 24 * 60 * 60 * 1000,
                       secure: process.env.NODE_ENV === 'production'? 'true' : 'auto',     //this ensures that the cookie can only be trasnmitted over HTTPS. 'auto' makes it identify between HTTP and HTTPS
                       sameSite: process.env.NODE_ENV === 'production'? 'none' : 'lax',    //'lax' is for local environemnt before pusshing to production. After pusshing to production should be set to 'none'
@@ -68,7 +69,7 @@ GitHubOAuth();                                          //initializing GitHub OA
         //ROOT
         app.get('/', (req, res)=>{RootLink.RootLink(req, res, db);});
         //SIGNIN
-        app.post('/signin', (req, res, next)=> {SignInLink.SignInLink(req, res, next)});  // Define a new route for handling POST requests to '/signin'
+        app.post('/signin', express.urlencoded({extended: false}), (req, res, next)=> {SignInLink.SignInLink(req, res, next)});  // Define a new route for handling POST requests to '/signin'
         
         //-------------------------Google---------------------//
         // Authenticate the user using Google OAuth2.0

@@ -11,7 +11,7 @@ const SignInLink = (req, res, next) => {
 //  console.log(res.getHeaders());                // logs the headers 
 //  console.log('Signin request received:', req.body.email);
 PassportConfig(passport); 
-
+  const { email, password } = req.body;
   // Authenticate the user using Passport
   passport.authenticate('local', function(err, user, info) {
     if (err) {
@@ -40,6 +40,14 @@ PassportConfig(passport);
         //   // This sets the 'remember_me' cookie in the browser, with the user's id as the value
         //   res.cookie('remember_me', user.id, cookieOpts);
         // }
+        req.session.regenerate((err)=>{
+          if(err) next(err);
+          req.session.user = req.body;
+
+          req.session.save((err)=>{
+            if(err) return next(err);
+          })
+        })
         return res.status(200).json({ message: 'success', user: { name: user.name } }); //restricting to back-end to send only name of the user
       });
     }
