@@ -34,7 +34,7 @@ const GitHubOAuth = (req, res, next) => {
           } //END OF if no such user exists
           else {
             // if user exists in the database
-            user = {id : currentUserQuery.rows[0].id, name: currentUserQuery.rows[0].name};
+            user = {id : currentUserQuery.rows[0].id, name: currentUserQuery.rows[0].name, provider: 'github'};
           }// end OF else block
           done(null, user);                                         
         } // END OF try block

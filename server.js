@@ -1,7 +1,7 @@
 //---------importing dependecies from './dependecies'------------------//
 const { GoogleStrategy, express, expressSession, app,
         pgSession, dotenv, pg, knex, db, pool, cors,
-        passport, passportLocal, localStrategy, bcrypt, jwt, sessionStore,
+        passport, passportLocal, localStrategy, bcrypt, jwt, sessionStore, cookieSession,
         crypto, cookieParser, csrf, csrfProtection} = require('./dependencies');
 //---------END OF importing dependecies from './dependecies'------------//
 
@@ -20,7 +20,7 @@ const pruneSessionInterval = BigInt(24 * 60 * 60 * 0);
             origin: process.env.FRONT_END_URL,          //should be same port as in React-App port
             credentials: true,                           //must be true. Communicate  cookies with other domain
             allowedHeaders: ['Content-Type'],
-            methods: ['GET', 'POST'],
+            methods: ['GET', 'POST', 'DELETE'],
         }));                                            //middleware
                                                         //  -> and populates the req.body object with the parsed data. 
         app.use(expressSession({
@@ -47,6 +47,12 @@ const pruneSessionInterval = BigInt(24 * 60 * 60 * 0);
                                                             res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
                                                             next();
                                                           });
+        app.use(function(req, res, next) {
+            res.header("Access-Control-Allow-Origin", "*"); // This will allow requests from all domains. You can set it to a specific domain as well.
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            next();
+        });
         app.use(passport.initialize());
         app.use(passport.session());                        
 //------------------------------END OF Middleware------------------------------//
@@ -96,7 +102,7 @@ GitHubOAuth();                                          //initializing GitHub OA
         //PROTECTED
         app.get('/protected', (req, res) => { Protected.Protected(req, res, passport, app)});
         //LOGOUT
-        app.post('/logout', (req, res, next)=> {Logout.Logout(req, res, next, passport)});
+        app.delete('/logout', (req, res, next)=> {Logout.Logout(req, res, next, passport)});
         //SIGNUP||REGISTER
         // When the server receives a POST request to the '/signup' route, it will execute the following code:
         app.post('/signup', (req, res) => { SignUpLink.SignUpLink(req, res, db, bcrypt)});   

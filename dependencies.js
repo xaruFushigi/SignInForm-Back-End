@@ -52,6 +52,7 @@ const jwt      = require('jsonwebtoken');   //jsonwebtoken for creating unique a
 const crypto   = require('crypto');     
 //cookies
 const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 
@@ -78,5 +79,6 @@ module.exports = {
     cookieParser,
     csrf,
     csrfProtection,
-    sessionStore
+    sessionStore,
+    cookieSession
 }

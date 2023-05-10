@@ -10,7 +10,7 @@ const PassportConfig = () => {
         new localStrategy({
             usernameField: 'email',
             passwordField: 'password'
-          },
+          }, 
             function(email, password, done) {
                 // Check the database for a user with the provided email
                 db.select('email', 'hash')
@@ -25,6 +25,8 @@ const PassportConfig = () => {
                                .from('users')
                                .where('email', '=', email)
                                .then(user => {
+                                const provider = {type : 'local'};
+                                user[0].provider = provider;
                                  done(null, user[0]);  // Return the first matching user as an authenticated user to Passport
                                })
                                .catch(err => done(err));  // If there is an error, return the error to Passport

@@ -5,13 +5,12 @@ const { GoogleStrategy, express, expressSession, app,
         pgSession, dotenv, pg, knex, db, pool, cors,
         passport, passportLocal, localStrategy, bcrypt, jwt, 
         crypto, cookieParser, csrf, csrfProtection} = require('../../dependencies');
-
-
+//need to confirm when i use https instead of http whether cookies created when signed in or not
+// since currently i am using http cookies are not created
 const SignInLink = (req, res, next) => { 
-//  console.log(res.getHeaders());                // logs the headers 
+//  console.log('getHeaders',res.getHeaders());                // logs the headers 
 //  console.log('Signin request received:', req.body.email);
-PassportConfig(passport); 
-  const { email, password } = req.body;
+PassportConfig(passport);
   // Authenticate the user using Passport
   passport.authenticate('local', function(err, user, info) {
     if (err) {
@@ -40,14 +39,7 @@ PassportConfig(passport);
         //   // This sets the 'remember_me' cookie in the browser, with the user's id as the value
         //   res.cookie('remember_me', user.id, cookieOpts);
         // }
-        req.session.regenerate((err)=>{
-          if(err) next(err);
-          req.session.user = req.body;
-
-          req.session.save((err)=>{
-            if(err) return next(err);
-          })
-        })
+        req.session.user = user;
         return res.status(200).json({ message: 'success', user: { name: user.name } }); //restricting to back-end to send only name of the user
       });
     }
