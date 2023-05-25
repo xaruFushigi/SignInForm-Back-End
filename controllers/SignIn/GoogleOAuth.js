@@ -1,7 +1,8 @@
 const { GoogleStrategy, express, expressSession, app, pgSession, dotenv, pg, knex, db, pool, cors, passport, passportLocal, localStrategy, bcrypt, jwt, crypto, cookieParser, csrf, csrfProtection } = require('../../dependencies');
 const { v4: uuidv4 } = require('uuid');
 const { PassportConfig } =  require('./PassportConfig');      //configuration of passport
-const { serialization } = require('./serialization');
+const serialization = require('./serialization');
+// const { serializeUser, deserializeUser } = require('./serialization');
 const { verify } = require('crypto');
 const GoogleOAuth = (req, res) => {
   
@@ -57,7 +58,8 @@ passport.use(new GoogleStrategy({
   //   // loads into req.user
   //   done(null, user);
   // });
-   serialization();
+ //  serialization();
+    serialization();
   
 };
 

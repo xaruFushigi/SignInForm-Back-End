@@ -1,17 +1,23 @@
-const { serialization } =  require('./serialization'); 
+//const serialization =  require('./serialization'); 
+const serialization = require('./serialization');
 
 const { GoogleStrategy, express, expressSession, app,
   pgSession, dotenv, pg, knex, db, pool, cors,
   passport, passportLocal, localStrategy, bcrypt, jwt, 
   crypto, cookieParser, csrf, csrfProtection} = require('../../dependencies');
 
-const PassportConfig = () => { 
+const PassportConfig = (req, res) => { 
+  serialization();
+
     passport.use(
         new localStrategy({
             usernameField: 'email',
             passwordField: 'password'
           }, 
             function(email, password, done) {
+              if(!email || !password) {
+                return res.send(400).json({message: 'wrong input of email or password'});
+              }
                 // Check the database for a user with the provided email
                 db.select('email', 'hash')
                   .from('login')
@@ -40,7 +46,6 @@ const PassportConfig = () => {
             }
         )
     )
-     serialization(passport);
 };
 
 module.exports = {

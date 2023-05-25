@@ -8,7 +8,8 @@ const { GoogleStrategy, express, expressSession, app,
 //---------importing JS files from controllers folder-------------------//
 const { GoogleOAuth }  = require('./controllers/SignIn/GoogleOAuth');
 const { GitHubOAuth }  = require('./controllers/SignIn/GitHubOAuth');
-const { serialization }  = require('./controllers/SignIn/serialization');
+const serialization   = require('./controllers/SignIn/serialization');
+//const { serializeUser, deserializeUser } = require('./controllers/SignIn/serialization');
 //---------END OF importing JS files from controllers folder------------//
 const pruneSessionInterval = BigInt(24 * 60 * 60 * 0);
 //------------------------------Middleware------------------------------//
@@ -38,23 +39,23 @@ const pruneSessionInterval = BigInt(24 * 60 * 60 * 0);
             }                                           //set cookie max age to 30 seconds
         }
         ));       
-
                                                         //  -> The extended option is set to false, which tells the parser to use the classic encoding,
                                                         //  -> where values can be only strings or arrays, and not any other type.
                                                         //  -> In short, this line of code enables the server to parse incoming request
                                                         //  -> data in the URL-encoded format and make it available in the req.body object.
-                                                        app.use((req, res, next) => {
-                                                            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-                                                            next();
-                                                          });
+        // app.use((req, res, next) => {
+        //             res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        // });
+      //  app.use(csrfProtection);s
         app.use(function(req, res, next) {
             res.header("Access-Control-Allow-Origin", "*"); // This will allow requests from all domains. You can set it to a specific domain as well.
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             next();
         });
+        serialization();                    // this function initializes passport.serializeUser and passport.deserializeUser
         app.use(passport.initialize());
-        app.use(passport.session());                        
+        app.use(passport.session());                    
 //------------------------------END OF Middleware------------------------------//
 
 //---------importing Routes from controllers folder---------------------//
@@ -75,8 +76,7 @@ GitHubOAuth();                                          //initializing GitHub OA
         //ROOT
         app.get('/', (req, res)=>{RootLink.RootLink(req, res, db);});
         //SIGNIN
-        app.post('/signin', express.urlencoded({extended: false}), (req, res, next)=> {SignInLink.SignInLink(req, res, next)});  // Define a new route for handling POST requests to '/signin'
-        
+        app.post('/signin', (req, res, next)=> {SignInLink.SignInLink(req, res, next)});  // Define a new route for handling POST requests to '/signin'
         //-------------------------Google---------------------//
         // Authenticate the user using Google OAuth2.0
             //GOOGLE OAUTH2.0
@@ -100,12 +100,12 @@ GitHubOAuth();                                          //initializing GitHub OA
                                                   successRedirect: 'http://localhost:3000/'})); 
         //-------------------------END OF Github---------------------//       
         //PROTECTED
-        app.get('/protected', (req, res) => { Protected.Protected(req, res, passport, app)});
+        app.get('/protected', isLoggedIn, (req, res) => { Protected.Protected(req, res, passport, app) });
         //LOGOUT
         app.delete('/logout', (req, res, next)=> {Logout.Logout(req, res, next, passport)});
         //SIGNUP||REGISTER
         // When the server receives a POST request to the '/signup' route, it will execute the following code:
-        app.post('/signup', (req, res) => { SignUpLink.SignUpLink(req, res, db, bcrypt)});   
+        app.post('/signup', (req, res) => { SignUpLink.SignUpLink(req, res, db, bcrypt)});  
 //------------------------------END OF Routes--------------------------------//
 //Start of server
 app.listen(`${process.env.PORT}`, ()=>{console.log(`app is running in port ${process.env.PORT}`)});

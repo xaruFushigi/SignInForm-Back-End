@@ -2,9 +2,12 @@ const { GoogleStrategy, GitHubStrategy, express, expressSession, app,
     pgSession, dotenv, pg, knex, db, pool, cors,
     passport, passportLocal, localStrategy, bcrypt, jwt, 
     crypto, cookieParser, csrf, csrfProtection} = require('../../dependencies');
-    const { serialization } = require('./serialization');
+const serialization = require('./serialization');
+// const { serializeUser, deserializeUser } = require('./serialization');
 const GitHubOAuth = (req, res, next) => {
     
+  serialization();
+
     passport.use(new GitHubStrategy({
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
@@ -53,7 +56,7 @@ const GitHubOAuth = (req, res, next) => {
     //     // loads into req.user
     //     done(null, user);
     //   });
-    serialization();
+  //  serialization();
 };
 
 module.exports = {

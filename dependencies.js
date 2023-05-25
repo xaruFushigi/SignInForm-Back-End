@@ -1,5 +1,6 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-var GitHubStrategy = require('passport-github').Strategy;
+const GitHubStrategy = require('passport-github').Strategy;
+const RememberMeStrategy = require('passport-remember-me').Strategy;
 //back-end related imports
 const express = require('express');
 const expressSession = require('express-session');              //middleware: to call to generate a new session ID. 'In Memory' sessions handled with express, passport requires this
@@ -73,6 +74,7 @@ module.exports = {
     passport,
     passportLocal,
     localStrategy,
+    RememberMeStrategy,
     bcrypt,
     jwt,
     crypto,

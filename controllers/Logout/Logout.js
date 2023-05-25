@@ -6,7 +6,6 @@ const pgSession = require('connect-pg-simple')(expressSession);
 
 const Logout = (req, res, next, passport) => {
     console.log('Logout route hit');
-  //  req.logout(err =>{if(err) console.log(err)})
     //clearing cookies
     res.clearCookie('session_cookie', { path: "/" })
     // Destroy the session
