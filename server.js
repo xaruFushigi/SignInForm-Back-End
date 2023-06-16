@@ -63,7 +63,7 @@ const SignInLink = require('./controllers/SignIn/signin');
 const SignUpLink = require('./controllers/SignUp/signup');
 const Logout     = require('./controllers/Logout/Logout');
 const Protected  = require('./controllers/Protected/Protected');
-const { serialization }  = require('./controllers/SignIn/serialization');
+const  serialization   = require('./controllers/SignIn/serialization');
 //---------END OF importing Routes from controllers folder--------------//
 // Middleware
 app.use(express.urlencoded({ extended: false }));
