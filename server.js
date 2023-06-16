@@ -65,6 +65,11 @@ const Logout     = require('./controllers/Logout/Logout');
 const Protected  = require('./controllers/Protected/Protected');
 const  serialization   = require('./controllers/SignIn/serialization');
 //---------END OF importing Routes from controllers folder--------------//
+//---------importing JS files from controllers folder-------------------//
+const { GoogleOAuth }  = require('./controllers/SignIn/GoogleOAuth');
+const { GitHubOAuth }  = require('./controllers/SignIn/GitHubOAuth');
+const { serialization }  = require('./controllers/SignIn/serialization');
+//---------END OF importing JS files from controllers folder------------//
 // Middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -92,10 +97,6 @@ app.use(
     },
   })
 );
-// Initializing Google and GitHub OAuth
-GoogleOAuth();
-GitHubOAuth();
-serialization();
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -180,3 +181,6 @@ app.post('/signup', (req, res) => {
 app.listen(process.env.PORT, () => {
   console.log(`App is running on port ${process.env.PORT}`);
 });
+// Initializing Google and GitHub OAuth
+GoogleOAuth();
+GitHubOAuth();
