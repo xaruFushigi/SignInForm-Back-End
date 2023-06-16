@@ -63,12 +63,11 @@ const SignInLink = require('./controllers/SignIn/signin');
 const SignUpLink = require('./controllers/SignUp/signup');
 const Logout     = require('./controllers/Logout/Logout');
 const Protected  = require('./controllers/Protected/Protected');
-const  serialization   = require('./controllers/SignIn/serialization');
 //---------END OF importing Routes from controllers folder--------------//
 //---------importing JS files from controllers folder-------------------//
 const { GoogleOAuth }  = require('./controllers/SignIn/GoogleOAuth');
 const { GitHubOAuth }  = require('./controllers/SignIn/GitHubOAuth');
-const { serialization }  = require('./controllers/SignIn/serialization');
+const serialization = require('./controllers/SignIn/serialization');
 //---------END OF importing JS files from controllers folder------------//
 // Middleware
 app.use(express.urlencoded({ extended: false }));
