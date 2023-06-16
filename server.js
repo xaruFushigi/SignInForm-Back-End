@@ -56,7 +56,15 @@ const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
-
+const pruneSessionInterval = BigInt(24 * 60 * 60 * 0);
+//---------importing Routes from controllers folder---------------------//
+const RootLink   = require('./controllers/Root/root');
+const SignInLink = require('./controllers/SignIn/signin');
+const SignUpLink = require('./controllers/SignUp/signup');
+const Logout     = require('./controllers/Logout/Logout');
+const Protected  = require('./controllers/Protected/Protected');
+const { serialization }  = require('./controllers/SignIn/serialization');
+//---------END OF importing Routes from controllers folder--------------//
 // Middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
