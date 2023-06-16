@@ -11,7 +11,7 @@ const GitHubOAuth = (req, res, next) => {
     passport.use(new GitHubStrategy({
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: "http://localhost:3050/auth/github/callback"
+        callbackURL: "https://signinform-back-end.onrender.com/auth/github/callback"
       },
     //callback function
     async (accessToken, refreshToken, profile, done) => {
