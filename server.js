@@ -143,7 +143,7 @@ const setCSRFToken = (req, res, next) => {
   next();
 };
 // ---------- Initializing Passport ----------- //
-serialization(req, res);
+serialization(db, passport);
 app.use(passport.initialize());
 app.use(passport.session());
 // ------ Initializing Google and GitHub OAuth ----//
@@ -160,7 +160,7 @@ app.get("/", csrfProtection, setCSRFToken, (req, res) => {
 });
 
 app.post("/signin", csrfProtection, setCSRFToken, (req, res) => {
-  SignInLink.SignInLink(req, res, next, passport);
+  SignInLink.SignInLink(req, res, next, db, passport);
 });
 
 app.get(
@@ -200,7 +200,7 @@ app.get(
     }
   },
   (req, res) => {
-    Protected.Protected(req, res);
+    Protected.Protected();
   }
 );
 
