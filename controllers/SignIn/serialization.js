@@ -2,82 +2,94 @@
 // Contains the serializeUser and deserializeUser functions
 // storing the user ID when serializing, and finding the user by ID when deserializing.
 const serialization = (db, passport) => {
-  //serializeUser determines which data of the user object should be stored in the session
   passport.serializeUser((user, done) => {
-    let userData = {
-      id: user.id,
-      provider: user.provider,
-    };
-    console.log("serializeUser", userData);
-    done(null, userData);
+    // loads into req.session.passport.user
+    console.log("serializeUser", user);
+    console.log("serializeUser", user.provider);
+    done(null, user.id, user.provider);
   });
-  // takes that cookie and unravels it and returns a user from it
-  // ->Take a user that we got cfrom a localStrategy and create a cookie
-  // ->with User ID inside of it
-  passport.deserializeUser(
-    (user, done) => {
-      console.log(user);
-      //handles Password authentication
-      let userData = {
-        id: user.id,
-        provider: user.provider.type,
-        providerGithub: user.provider,
-      };
+  //retriveing user data from the session using the 'user' parameter and use it to fetch data
+  //->from the database and then passes it to 'done' function.
+  passport.deserializeUser((user, done) => {
+    console.log("deserializeUser", user);
+    done(null, user);
+  });
+  //serializeUser determines which data of the user object should be stored in the session
+  // passport.serializeUser((user, done) => {
+  //   let userData = {
+  //     id: user.id,
+  //     provider: user.provider,
+  //   };
+  //   console.log("serializeUser", userData);
+  //   done(null, userData);
+  // });
+  // // takes that cookie and unravels it and returns a user from it
+  // // ->Take a user that we got cfrom a localStrategy and create a cookie
+  // // ->with User ID inside of it
+  // passport.deserializeUser(
+  //   (user, done) => {
+  //     console.log(user);
+  //     //handles Password authentication
+  //     let userData = {
+  //       id: user.id,
+  //       provider: user.provider.type,
+  //       providerGithub: user.provider,
+  //     };
 
-      console.log("deserializeUser", user);
+  //     console.log("deserializeUser", user);
 
-      if (userData.provider === "local") {
-        console.log("inside local");
-        db.select("name")
-          .from("users")
-          .where("id", "=", userData.id) //restrciting to retrieve only user name from database
-          .then((user) => {
-            //  done(null, user[0]);
-            const userInformation = { name: user[0].name };
-            console.log("deserializeUser", userInformation);
-            done(null, userInformation);
-          })
-          .catch((error) => done(error));
-      } // end of if
-      else {
-        console.log("not local provider");
-      }
-      //handles Google OAuth 2.0 authentication
-      if (userData.provider === "google") {
-        console.log("inside google");
-        // handle Google user object
-        db.select("name", "id")
-          .from("users")
-          .where("id", "=", userData.id)
-          .then((user) => {
-            const userInformation = { name: user[0].name };
-            console.log("deserializeUser", user);
-            done(null, userInformation);
-          })
-          .catch((error) => done(error));
-      } //end of else if
-      else {
-        console.log("not google provider");
-      }
-      //handles Github OAuth 2.0 authentication
-      if (userData.providerGithub === "github") {
-        console.log("inside github");
-        // handle Google user object
-        db.select("name", "id")
-          .from("users")
-          .where("id", "=", userData.id)
-          .then((user) => {
-            const userInformation = { name: user[0].name };
-            console.log("deserializeUser", user);
-            done(null, userInformation);
-          })
-          .catch((error) => done(error));
-      } //end of else if
-      else {
-        console.log("not github provider");
-      }
-    } //end of deserializeUser
-  ); //end of deserizeUser
+  //     if (userData.provider === "local") {
+  //       console.log("inside local");
+  //       db.select("name")
+  //         .from("users")
+  //         .where("id", "=", userData.id) //restrciting to retrieve only user name from database
+  //         .then((user) => {
+  //           //  done(null, user[0]);
+  //           const userInformation = { name: user[0].name };
+  //           console.log("deserializeUser", userInformation);
+  //           done(null, userInformation);
+  //         })
+  //         .catch((error) => done(error));
+  //     } // end of if
+  //     else {
+  //       console.log("not local provider");
+  //     }
+  //     //handles Google OAuth 2.0 authentication
+  //     if (userData.provider === "google") {
+  //       console.log("inside google");
+  //       // handle Google user object
+  //       db.select("name", "id")
+  //         .from("users")
+  //         .where("id", "=", userData.id)
+  //         .then((user) => {
+  //           const userInformation = { name: user[0].name };
+  //           console.log("deserializeUser", user);
+  //           done(null, userInformation);
+  //         })
+  //         .catch((error) => done(error));
+  //     } //end of else if
+  //     else {
+  //       console.log("not google provider");
+  //     }
+  //     //handles Github OAuth 2.0 authentication
+  //     if (userData.providerGithub === "github") {
+  //       console.log("inside github");
+  //       // handle Google user object
+  //       db.select("name", "id")
+  //         .from("users")
+  //         .where("id", "=", userData.id)
+  //         .then((user) => {
+  //           const userInformation = { name: user[0].name };
+  //           console.log("deserializeUser", user);
+  //           done(null, userInformation);
+  //         })
+  //         .catch((error) => done(error));
+  //     } //end of else if
+  //     else {
+  //       console.log("not github provider");
+  //     }
+  //   } //end of deserializeUser
+  // ); //end of deserizeUser
 }; //end of cosnt serialization
 
 module.exports = serialization;
