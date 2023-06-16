@@ -1,5 +1,5 @@
 const serialization = require("./serialization");
-const GitHubOAuth = (req, res, pool, passport, GitHubStrategy) => {
+const GitHubOAuth = (pool, passport, GitHubStrategy) => {
   serialization();
 
   passport.use(

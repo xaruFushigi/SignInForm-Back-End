@@ -1,5 +1,5 @@
 const serialization = require("./serialization");
-const GoogleOAuth = (req, res, pool, passport, GoogleStrategy) => {
+const GoogleOAuth = (pool, passport, GoogleStrategy) => {
   passport.use(
     new GoogleStrategy(
       {

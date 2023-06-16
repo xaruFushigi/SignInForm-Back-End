@@ -5,7 +5,6 @@ const serialization = require("./serialization");
 
 const SignInLink = (req, res, next, db, passport) => {
   //  console.log('getHeaders',res.getHeaders());                // logs the headers
-  //  console.log('Signin request received:', req.body.email)
   PassportConfig(req, res);
   serialization(db, passport);
   const clientCSRFToken = req.clientCSRFToken; // Get CSRF token from request header

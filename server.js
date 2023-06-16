@@ -147,8 +147,8 @@ serialization(db, passport);
 app.use(passport.initialize());
 app.use(passport.session());
 // ------ Initializing Google and GitHub OAuth ----//
-GoogleOAuth(req, res, pool, passport, GoogleStrategy);
-GitHubOAuth(req, res, pool, passport, GitHubStrategy);
+GoogleOAuth(pool, passport, GoogleStrategy);
+GitHubOAuth(pool, passport, GitHubStrategy);
 // ---------------- ROUTES ----------------- //
 app.get("/csrf-token", (req, res) => {
   const csrfToken = req.csrfToken(); // Generates the CSRF token
