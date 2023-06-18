@@ -191,7 +191,7 @@ app.post("/signup", csrfProtection, setCSRFToken, (req, res) => {
   SignUpLink.SignUpLink(req, res, db, bcrypt);
 });
 // SIGNIN
-app.post("/signin", csrfProtection, setCSRFToken, (req, res) => {
+app.post("/signin", csrfProtection, setCSRFToken, (req, res, next) => {
   SignInLink.SignInLink(req, res, next, passport, passportLocal, db, bcrypt);
 });
 // GOOGLE OAUTH2.0
