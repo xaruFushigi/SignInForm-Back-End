@@ -5,13 +5,21 @@ const serialization = (db, passport) => {
   passport.serializeUser((user, done) => {
     // loads into req.session.passport.user
     console.log("serializeUser", user);
-    done(null, user.id, user.provider);
+    done(null, user.id);
   });
   //retriveing user data from the session using the 'user' parameter and use it to fetch data
   //->from the database and then passes it to 'done' function.
-  passport.deserializeUser((user, done) => {
-    console.log("deserializeUser", user);
-    done(null, user);
+  passport.deserializeUser((id, done) => {
+    // Retrieve user data from the database using the user ID
+    db.query("SELECT * FROM users WHERE id = $1", [id])
+      .then((result) => {
+        const user = result.rows[0];
+        console.log("deserializeUser", user);
+        done(null, user);
+      })
+      .catch((err) => {
+        done(err, null);
+      });
   });
   //serializeUser determines which data of the user object should be stored in the session
   // passport.serializeUser((user, done) => {
