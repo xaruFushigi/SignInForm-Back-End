@@ -1,4 +1,3 @@
-const serialization = require("./serialization");
 const GoogleOAuth = (pool, passport, GoogleStrategy) => {
   passport.use(
     new GoogleStrategy(
@@ -56,18 +55,6 @@ const GoogleOAuth = (pool, passport, GoogleStrategy) => {
       } // END OF callback function
     ) //end of GoogleStrategy round block
   ); // end of OAuth round block
-
-  // passport.serializeUser((user, done) => {
-  //   // loads into req.session.passport.user
-  //   done(null, user);
-  // });
-
-  // passport.deserializeUser((user, done) => {
-  //   // loads into req.user
-  //   done(null, user);
-  // });
-  //  serialization();
-  serialization(passport);
 };
 
 module.exports = {

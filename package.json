@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "bcrypt": "^5.1.0",
-    "connect-pg-simple": "^8.0.0",
+    "connect-pg-simple": "^9.0.0",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
@@ -12,19 +12,14 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "express-slow-down": "^1.6.0",
-    "jsonwebtoken": "^9.0.0",
     "knex": "^2.4.2",
-    "mongoose": "^7.0.3",
     "passport": "^0.6.0",
     "passport-auth-token": "^1.0.1",
     "passport-github": "^1.1.0",
     "passport-google-oauth2": "^0.2.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "passport-remember-me": "^0.0.1",
-    "pg": "^8.10.0",
-    "uuid": "^9.0.0"
+    "pg": "^8.10.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

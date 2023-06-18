@@ -1,7 +1,4 @@
-const serialization = require("./serialization");
 const GitHubOAuth = (pool, passport, GitHubStrategy) => {
-  serialization();
-
   passport.use(
     new GitHubStrategy(
       {
@@ -50,17 +47,6 @@ const GitHubOAuth = (pool, passport, GitHubStrategy) => {
       } // END OF callback function
     )
   );
-
-  // passport.serializeUser((user, done) => {
-  //     // loads into req.session.passport.user
-  //     done(null, user);
-  //   });
-
-  //   passport.deserializeUser((user, done) => {
-  //     // loads into req.user
-  //     done(null, user);
-  //   });
-  //  serialization();
 };
 
 module.exports = {
