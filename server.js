@@ -83,11 +83,7 @@ const SignUpLink = require("./controllers/SignUp/signup");
 const Logout = require("./controllers/Logout/Logout");
 const Protected = require("./controllers/Protected/Protected");
 //---------END OF importing Routes from controllers folder--------------//
-//---------importing JS files from controllers folder-------------------//
-const { GoogleOAuth } = require("./controllers/SignIn/GoogleOAuth");
-const { GitHubOAuth } = require("./controllers/SignIn/GitHubOAuth");
-const serialization = require("./controllers/SignIn/serialization");
-//---------END OF importing JS files from controllers folder------------//
+
 //---------Middlewear------------------//
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -145,6 +141,12 @@ const setCSRFToken = (req, res, next) => {
 // ---------- Initializing Passport ----------- //
 app.use(passport.initialize());
 app.use(passport.session());
+
+//---------importing JS files from controllers folder-------------------//
+const { GoogleOAuth } = require("./controllers/SignIn/GoogleOAuth");
+const { GitHubOAuth } = require("./controllers/SignIn/GitHubOAuth");
+const serialization = require("./controllers/SignIn/serialization");
+//---------END OF importing JS files from controllers folder------------//
 serialization(db, passport);
 // ------ Initializing Google and GitHub OAuth ----//
 GoogleOAuth(pool, passport, GoogleStrategy);
