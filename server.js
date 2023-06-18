@@ -14,8 +14,8 @@ const knex = require("knex"); // a SQL query builder for Node.js. allows to writ
 const db = knex({
   client: "pg",
   connection: {
-    // connectionString: process.env.DATABASE_URL,
-    // ssl: { rejectUnauthorized: false },
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
     host: process.env.DATABASE_HOST,
     port: process.env.DATABASE_PORT,
     user: process.env.DATABASE_USER,
