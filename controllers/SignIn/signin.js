@@ -1,4 +1,4 @@
-const SignInLink = (req, res, next, db, passport) => {
+const SignInLink = (req, res, next, passport, passportLocal, db, bcrypt) => {
   const clientCSRFToken = req.clientCSRFToken; // Get CSRF token from request header
   const serverCSRFToken = req.serverCSRFToken; // Get CSRF token stored on the server
   if (clientCSRFToken === serverCSRFToken) {
