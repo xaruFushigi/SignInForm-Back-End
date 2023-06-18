@@ -5,7 +5,7 @@ const GoogleOAuth = (pool, passport, GoogleStrategy) => {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${BACK_END_URL}/auth/google/callback`, //should be same as Google's Authorized redirect URIs
+        callbackURL: `${process.env.BACK_END_URL}/auth/google/callback`, //should be same as Google's Authorized redirect URIs
         scope: ["profile", "email"], //what is going to be visible of user's account
         state: true,
       },

@@ -7,7 +7,7 @@ const GitHubOAuth = (pool, passport, GitHubStrategy) => {
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: `${BACK_END_URL}/auth/github/callback`,
+        callbackURL: `${process.env.BACK_END_URL}/auth/github/callback`,
       },
       //callback function
       async (accessToken, refreshToken, profile, done) => {
