@@ -171,7 +171,7 @@ const Protected = require("./controllers/Protected/Protected");
 const { GoogleOAuth } = require("./controllers/SignIn/GoogleOAuth");
 const { GitHubOAuth } = require("./controllers/SignIn/GitHubOAuth");
 //---------END OF importing JS files from controllers folder------------//
-serialization(db, passport);
+
 // ------ Initializing Google and GitHub OAuth ----//
 GoogleOAuth(pool, passport, GoogleStrategy);
 GitHubOAuth(pool, passport, GitHubStrategy);
