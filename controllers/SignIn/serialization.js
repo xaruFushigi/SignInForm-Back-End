@@ -5,7 +5,6 @@ const serialization = (db, passport) => {
   passport.serializeUser((user, done) => {
     // loads into req.session.passport.user
     console.log("serializeUser", user);
-    console.log("serializeUser", user.provider);
     done(null, user.id, user.provider);
   });
   //retriveing user data from the session using the 'user' parameter and use it to fetch data
