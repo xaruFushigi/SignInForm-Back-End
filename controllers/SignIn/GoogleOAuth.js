@@ -67,7 +67,7 @@ const GoogleOAuth = (pool, passport, GoogleStrategy) => {
   //   done(null, user);
   // });
   //  serialization();
-  serialization();
+  serialization(passport);
 };
 
 module.exports = {

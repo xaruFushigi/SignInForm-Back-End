@@ -143,9 +143,9 @@ const setCSRFToken = (req, res, next) => {
   next();
 };
 // ---------- Initializing Passport ----------- //
-serialization(db, passport);
 app.use(passport.initialize());
 app.use(passport.session());
+serialization(db, passport);
 // ------ Initializing Google and GitHub OAuth ----//
 GoogleOAuth(pool, passport, GoogleStrategy);
 GitHubOAuth(pool, passport, GitHubStrategy);
