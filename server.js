@@ -69,6 +69,7 @@ const cookieParser = require("cookie-parser");
 const csrf = require("csurf");
 const csrfProtection = csrf({ cookie: true });
 
+const path = require("path");
 //---------Implementation Middlewear------------------//
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -120,6 +121,9 @@ app.set("trust proxy", true);
 app.use(passport.initialize());
 app.use(passport.session());
 // ---------- END OF Initializing Passport ----------- //
+
+// Serve static files from the 'build' directory
+app.use(express.static(path.join(__dirname, "build")));
 
 //-------- Creating csrf token -----------//
 const setCSRFToken = (req, res, next) => {
@@ -242,7 +246,7 @@ app.post("/logout", (req, res, next) => {
 });
 // ALL ROUTE CATCH
 app.all("*", (req, res) => {
-  res.status(404).json({ message: "Route not found" });
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 // ---------------- END OF ROUTES ----------------- //
 
