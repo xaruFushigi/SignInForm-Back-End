@@ -173,8 +173,7 @@ const { GitHubOAuth } = require("./controllers/SignIn/GitHubOAuth");
 //---------END OF importing JS files from controllers folder------------//
 
 // ------ Initializing Google and GitHub OAuth ----//
-GoogleOAuth(pool, passport, GoogleStrategy);
-GitHubOAuth(pool, passport, GitHubStrategy);
+
 // ---------------- ROUTES ----------------- //
 // CSRF TOKEN
 app.get("/csrf-token", (req, res) => {
@@ -187,7 +186,7 @@ app.get("/", (req, res) => {
   RootLink.RootLink(req, res);
 });
 // SIGNUP
-app.post("/signup", csrfProtection, setCSRFToken, (req, res) => {
+app.post("/signup", (req, res) => {
   SignUpLink.SignUpLink(req, res, db, bcrypt);
 });
 // SIGNIN
@@ -246,3 +245,5 @@ app.post("/logout", (req, res, next) => {
 app.listen(process.env.PORT, () => {
   console.log(`App is running on port ${process.env.PORT}`);
 });
+GoogleOAuth(pool, passport, GoogleStrategy);
+GitHubOAuth(pool, passport, GitHubStrategy);

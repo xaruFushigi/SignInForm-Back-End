@@ -37,7 +37,9 @@ const SignInLink = (req, res, next, passport, passportLocal, db, bcrypt) => {
               } //end of if
               else {
                 // If the password is incorrect, return an error message to Passport
-                done(null, false, { message: "Invalid password" });
+                done(null, false, {
+                  message: "Invalid password or email address",
+                });
               } //end of else
             }) //end of then of data parameter
             .catch((error) => console.log(error)); //end of caatch
