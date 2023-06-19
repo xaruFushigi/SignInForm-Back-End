@@ -12,7 +12,7 @@ const SignInLink = (req, res, next, passport, passportLocal, db, bcrypt) => {
         function (email, password, done) {
           if (!email || !password) {
             return res
-              .send(400)
+              .status(400)
               .json({ message: "wrong input of email or password" });
           }
           // Check the database for a user with the provided email
