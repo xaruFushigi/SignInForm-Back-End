@@ -99,7 +99,7 @@ app.use(
     origin: process.env.FRONT_END_URL,
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "OPTIONS"],
   })
 );
 app.use(csrfProtection);
@@ -170,6 +170,8 @@ const Protected = require("./controllers/Protected/Protected");
 //---------importing JS files from controllers folder-------------------//
 const { GoogleOAuth } = require("./controllers/SignIn/GoogleOAuth");
 const { GitHubOAuth } = require("./controllers/SignIn/GitHubOAuth");
+GoogleOAuth(pool, passport, GoogleStrategy);
+GitHubOAuth(pool, passport, GitHubStrategy);
 //---------END OF importing JS files from controllers folder------------//
 
 // ------ Initializing Google and GitHub OAuth ----//
@@ -245,5 +247,3 @@ app.post("/logout", (req, res, next) => {
 app.listen(process.env.PORT, () => {
   console.log(`App is running on port ${process.env.PORT}`);
 });
-GoogleOAuth(pool, passport, GoogleStrategy);
-GitHubOAuth(pool, passport, GitHubStrategy);

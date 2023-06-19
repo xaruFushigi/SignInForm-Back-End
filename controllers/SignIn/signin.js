@@ -78,6 +78,4 @@ const SignInLink = (req, res, next, passport, passportLocal, db, bcrypt) => {
   }
 };
 
-module.exports = {
-  SignInLink: SignInLink,
-};
+module.exports = SignInLink;
