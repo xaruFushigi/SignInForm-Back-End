@@ -1,9 +1,8 @@
 const SignUpLink = async (req, res, db, bcrypt) => {
-  console.log(req.body.email);
   try {
     // Extract the name, email, and password fields from the request body sent by the client:
     const { name, email, password } = req.body; //destructuring
-
+    console.log(req.body.name);
     // CHECK if a user with the given email already exists in the 'login' table of the database:
     const existingUser = await db("login").where({ email }).first();
 
