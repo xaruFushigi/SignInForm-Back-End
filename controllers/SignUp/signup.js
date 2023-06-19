@@ -1,5 +1,4 @@
 const SignUpLink = async (req, res, db, bcrypt) => {
-  console.log("Registration request received:", user.email);
   try {
     // Extract the name, email, and password fields from the request body sent by the client:
     const { name, email, password } = req.body; //destructuring
