@@ -8,6 +8,7 @@ const GitHubOAuth = (pool, passport, GitHubStrategy) => {
       },
       //callback function
       async (accessToken, refreshToken, profile, done) => {
+        console.log(profile);
         const account = profile._json;
         let user = {};
         try {
@@ -27,8 +28,8 @@ const GitHubOAuth = (pool, passport, GitHubStrategy) => {
               [account.id]
             );
             user = {
-              id: id.rows.id,
-              name: account.rows.name,
+              id: id.rows[0].id,
+              name: account.rows[0].name,
             };
           } //END OF if no such user exists
           else {
