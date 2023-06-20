@@ -8,7 +8,6 @@ const SignUpLink = async (req, res, db, bcrypt) => {
 
     if (existingUser) {
       // If such a USER EXISTS, send an HTTP response with status code 400 and an error message:
-      alert("user already exists");
       return res.status(400).json({ error: "User already exists" });
     } //end of existingUser
 
@@ -16,20 +15,18 @@ const SignUpLink = async (req, res, db, bcrypt) => {
       // Hashing a password
       const hashedPassword = await bcrypt.hash(password, 10);
       // If the user DOES NOT already exist, insert a new user with the given name, email, and registration date into the 'users' table of the database:
-      const newUser = await db("users")
-        .insert({
+      const newUser = await db.transaction(async (trx) => {
+        await trx("users").insert({
           name,
           email,
           joined: new Date(),
-        })
-        .returning("*");
-
-      // Insert the hashed password into the 'login' table of the database along with the user's email:
-      await db("login").insert({
-        email,
-        hash: hashedPassword,
+        });
+        // Insert the hashed password into the 'login' table of the database along with the user's email:
+        await trx("login").insert({
+          email,
+          hash: hashedPassword,
+        });
       });
-
       // Send an HTTP response with status code 201, the newly created user object, and a success message:
       res
         .status(201)
