@@ -14,7 +14,7 @@ const SignUpLink = async (req, res, db, bcrypt) => {
     // Hashing a password
     const hashedPassword = await bcrypt.hash(password, 10);
     // If the user DOES NOT already exist, insert a new user with the given name, email, and registration date into the 'users' table of the database:
-    const newUser = await db.transaction(async (trx) => {
+    await db.transaction(async (trx) => {
       await trx("users").insert({
         name,
         email,
