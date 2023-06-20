@@ -9,7 +9,7 @@ const GitHubOAuth = (pool, passport, GitHubStrategy) => {
       //callback function
       async (accessToken, refreshToken, profile, done) => {
         console.log(profile);
-        const account = profile._json;
+        const account = profile;
         let user = {};
         try {
           const currentUserQuery = await pool.query(
@@ -29,7 +29,7 @@ const GitHubOAuth = (pool, passport, GitHubStrategy) => {
             );
             user = {
               id: id.rows[0].id,
-              name: account.rows[0].name,
+              name: account.name,
             };
           } //END OF if no such user exists
           else {
