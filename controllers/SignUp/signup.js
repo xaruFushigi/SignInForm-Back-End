@@ -27,9 +27,7 @@ const SignUpLink = async (req, res, db, bcrypt) => {
       });
     });
     // Send an HTTP response with status code 201, the newly created user object, and a success message:
-    return res
-      .status(201)
-      .json({ user: newUser[0], message: "User created successfully" });
+    return res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     // If there was an error during this process, log the error and send an HTTP response with status code 500 and an error message:
     console.log(error);
