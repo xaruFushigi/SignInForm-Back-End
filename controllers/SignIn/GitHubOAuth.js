@@ -9,7 +9,7 @@ const GitHubOAuth = (pool, passport, GitHubStrategy) => {
       //callback function
       async (accessToken, refreshToken, profile, done) => {
         const account = profile._json;
-        console.log(account);
+        console.log("GITHUB CREDENTIALS", account);
         let user = {};
         try {
           const currentUserQuery = await pool.query(
