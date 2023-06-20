@@ -8,8 +8,8 @@ const GitHubOAuth = (pool, passport, GitHubStrategy) => {
       },
       //callback function
       async (accessToken, refreshToken, profile, done) => {
-        console.log(profile);
-        const account = profile;
+        const account = profile._json;
+        console.log(account);
         let user = {};
         try {
           const currentUserQuery = await pool.query(
