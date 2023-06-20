@@ -30,7 +30,6 @@ const SignUpLink = async (req, res, db, bcrypt) => {
     return res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     // If there was an error during this process, log the error and send an HTTP response with status code 500 and an error message:
-    console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

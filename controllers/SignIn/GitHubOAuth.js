@@ -27,8 +27,8 @@ const GitHubOAuth = (pool, passport, GitHubStrategy) => {
               [account.id]
             );
             user = {
-              id: id.rows[0].id,
-              name: account.rows[0].name,
+              id: id.rows.id,
+              name: account.rows.name,
             };
           } //END OF if no such user exists
           else {
